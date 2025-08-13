@@ -36,16 +36,16 @@
     <div class="mt-4 text-gray-700" id="resultsPanel" aria-live="polite">
       <div class="grid grid-cols-2 gap-4">
         <div class="col-span-2 bg-blue-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold">Location</span>
+          <span class="text-lg font-semibold"><span title="Location">📍</span> Location</span>
           <p id="location" class="text-center text-sm">Fetching location...</p>
         </div>
         <div class="col-span-2 flex gap-4 mt-2">
           <div class="bg-blue-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold">Timezone</span>
+            <span class="text-lg font-semibold"><span title="Timezone">🕒</span> Timezone</span>
             <p id="timezone" class="text-center text-sm">--</p>
           </div>
           <div class="bg-yellow-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold">Date</span>
+            <span class="text-lg font-semibold"><span title="Date">📅</span> Date</span>
             <p id="date" class="text-center text-sm">--</p>
           </div>
         </div>
@@ -62,11 +62,13 @@
         <div class="col-span-2 flex gap-4 mt-2">
           <div class="bg-green-50 rounded-lg p-3 flex-1 flex flex-col items-center">
             <span class="text-lg font-semibold flex items-center gap-1" title="Period shortly after sunrise or before sunset when daylight is redder and softer">🟡 Golden Hour</span>
-            <p id="goldenhour" class="text-center text-sm">--</p>
+            <p id="goldenhour-morning" class="text-center text-xs">--</p>
+            <p id="goldenhour-evening" class="text-center text-xs mt-1">--</p>
           </div>
           <div class="bg-blue-100 rounded-lg p-3 flex-1 flex flex-col items-center">
             <span class="text-lg font-semibold flex items-center gap-1" title="Period of twilight in the morning or evening when the sun is below the horizon and the sky is deep blue">🔵 Blue Hour</span>
-            <p id="bluehour" class="text-center text-sm">--</p>
+            <p id="bluehour-morning" class="text-center text-xs">--</p>
+            <p id="bluehour-evening" class="text-center text-xs mt-1">--</p>
           </div>
         </div>
       </div>
@@ -105,7 +107,7 @@
       errorMessage.classList.add('hidden');
     }
 
-    function updateResults({ location, timezone, date, sunrise, sunset, goldenhour, bluehour }) {
+    function updateResults({ location, timezone, date, sunrise, sunset, goldenhourMorning, goldenhourEvening, bluehourMorning, bluehourEvening }) {
       // If location contains (Lat xx, Lon xx), split to new line
       const locElem = document.getElementById('location');
       const match = location.match(/^(.*) \(Lat ([\d.-]+), Lon ([\d.-]+)\)$/);
@@ -118,8 +120,10 @@
       document.getElementById('date').textContent = date;
       document.getElementById('sunrise').textContent = sunrise;
       document.getElementById('sunset').textContent = sunset;
-      document.getElementById('goldenhour').textContent = goldenhour;
-      document.getElementById('bluehour').textContent = bluehour;
+      document.getElementById('goldenhour-morning').textContent = `Morning: ${goldenhourMorning}`;
+      document.getElementById('goldenhour-evening').textContent = `Evening: ${goldenhourEvening}`;
+      document.getElementById('bluehour-morning').textContent = `Morning: ${bluehourMorning}`;
+      document.getElementById('bluehour-evening').textContent = `Evening: ${bluehourEvening}`;
     }
 
     function getSunTimes(lat, lon, date, timezoneOffset) {
@@ -129,15 +133,21 @@
       function format(dt) {
         return dt ? new Date(dt.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' }) : '--';
       }
-      // Golden hour: sunsetStart to sunsetEnd
-      const goldenhour = times.goldenHour ? format(times.goldenHour) : '--';
-      // Blue hour: dusk to night
-      const bluehour = times.dusk && times.night ? `${format(times.dusk)} - ${format(times.night)}` : '--';
+      // Morning golden hour: sunriseEnd to goldenHourEnd
+      const goldenhourMorning = times.sunriseEnd && times.goldenHourEnd ? `${format(times.sunriseEnd)} - ${format(times.goldenHourEnd)}` : '--';
+      // Evening golden hour: goldenHour to sunset
+      const goldenhourEvening = times.goldenHour && times.sunset ? `${format(times.goldenHour)} - ${format(times.sunset)}` : '--';
+      // Morning blue hour: dawn to sunrise
+      const bluehourMorning = times.dawn && times.sunrise ? `${format(times.dawn)} - ${format(times.sunrise)}` : '--';
+      // Evening blue hour: dusk to night
+      const bluehourEvening = times.dusk && times.night ? `${format(times.dusk)} - ${format(times.night)}` : '--';
       return {
         sunrise: format(times.sunrise),
         sunset: format(times.sunset),
-        goldenhour,
-        bluehour,
+        goldenhourMorning,
+        goldenhourEvening,
+        bluehourMorning,
+        bluehourEvening,
         date: calcDate.toLocaleDateString()
       };
     }
@@ -295,8 +305,10 @@
             date: sun.date,
             sunrise: sun.sunrise,
             sunset: sun.sunset,
-            goldenhour: sun.goldenhour,
-            bluehour: sun.bluehour
+            goldenhourMorning: sun.goldenhourMorning,
+            goldenhourEvening: sun.goldenhourEvening,
+            bluehourMorning: sun.bluehourMorning,
+            bluehourEvening: sun.bluehourEvening
           });
           marker.setLatLng([lat, lon]).setPopupContent(locationName).openPopup();
         } catch (error) {
@@ -334,8 +346,10 @@
           date: sun.date,
           sunrise: sun.sunrise,
           sunset: sun.sunset,
-          goldenhour: sun.goldenhour,
-          bluehour: sun.bluehour
+          goldenhourMorning: sun.goldenhourMorning,
+          goldenhourEvening: sun.goldenhourEvening,
+          bluehourMorning: sun.bluehourMorning,
+          bluehourEvening: sun.bluehourEvening
         });
         initMap(parseFloat(lat), parseFloat(lon), display_name);
         favoriteBtn.onclick = () => saveFavorite(display_name, lat, lon, date);
@@ -367,8 +381,10 @@
             date: sun.date,
             sunrise: sun.sunrise,
             sunset: sun.sunset,
-            goldenhour: sun.goldenhour,
-            bluehour: sun.bluehour
+            goldenhourMorning: sun.goldenhourMorning,
+            goldenhourEvening: sun.goldenhourEvening,
+            bluehourMorning: sun.bluehourMorning,
+            bluehourEvening: sun.bluehourEvening
           });
           initMap(latitude, longitude, locationName);
           favoriteBtn.onclick = () => saveFavorite(locationName, latitude, longitude, date);
