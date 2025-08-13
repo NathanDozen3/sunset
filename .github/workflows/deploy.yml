@@ -13,9 +13,9 @@ jobs:
       - name: Inject API Key
         env:
           TIMEZONEDB_API_KEY: ${{ secrets.TIMEZONEDB_API_KEY }}
-        run: sed -i "s/YOUR_API_KEY/$TIMEZONEDB_API_KEY/g" app/public/index.html
+        run: sed -i "s/YOUR_API_KEY/$TIMEZONEDB_API_KEY/g" index.html
       - name: Show index.html after replacement
-        run: head app/public/index.html
+        run: head index.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
