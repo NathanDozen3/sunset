@@ -76,7 +76,7 @@
     }
 
     async function getTimezone(lat, lon) {
-      if (TIMEZONEDB_API_KEY === 'B0HKRH0IGONF') {
+      if (TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
         throw new Error('TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.');
       }
       try {
@@ -218,7 +218,7 @@
     }
 
     window.onload = () => {
-      if (TIMEZONEDB_API_KEY === 'B0HKRH0IGONF') {
+      if (TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
         document.getElementById('location').textContent = 'TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.';
         return;
       }
