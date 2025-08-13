@@ -123,7 +123,7 @@
     }
 
     function getSunTimes(lat, lon, date, timezoneOffset) {
-      const calcDate = date ? new Date(date) : new Date();
+      const calcDate = date ? new Date(date + 'T00:00:00') : new Date();
       const times = SunCalc.getTimes(calcDate, lat, lon);
       const offsetMs = timezoneOffset * 1000;
       function format(dt) {
