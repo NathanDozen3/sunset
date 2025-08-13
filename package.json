@@ -1,0 +1,24 @@
+{
+  "name": "sunset",
+  "version": "1.0.0",
+  "description": "A modern web app to view sunrise, sunset, golden hour, and blue hour times for any location and date, with timezone support and interactive map.",
+  "homepage": "https://github.com/NathanDozen3/sunset#readme",
+  "bugs": {
+    "url": "https://github.com/NathanDozen3/sunset/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NathanDozen3/sunset.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11"
+  }
+}
