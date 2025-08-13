@@ -37,7 +37,8 @@
   </footer>
 
   <script>
-    const TIMEZONEDB_API_KEY = process.env.TIMEZONEDB_API_KEY || 'YOUR_API_KEY';
+    // Replace 'YOUR_API_KEY' with the TimeZoneDB API key during deployment
+    const TIMEZONEDB_API_KEY = 'YOUR_API_KEY';
 
     let map, marker;
 
@@ -76,6 +77,9 @@
     }
 
     async function getTimezone(lat, lon) {
+      if (TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
+        throw new Error('TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.');
+      }
       try {
         const response = await fetch(`https://api.timezonedb.com/v2.1/get-time-zone?key=${TIMEZONEDB_API_KEY}&format=json&by=position&lat=${lat}&lng=${lon}`);
         const data = await response.json();
@@ -162,7 +166,7 @@
         document.getElementById('sunset').textContent = `Sunset: ${sunset}`;
         initMap(parseFloat(lat), parseFloat(lon), display_name);
       } catch (error) {
-        document.getElementById('location').textContent = 'Search failed';
+        document.getElementById('location').textContent = error.message || 'Search failed';
         console.error('Search error:', error);
       }
     }
@@ -215,8 +219,8 @@
     }
 
     window.onload = () => {
-      if (!TIMEZONEDB_API_KEY || TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
-        document.getElementById('location').textContent = 'TimeZoneDB API key missing. Please set TIMEZONEDB_API_KEY environment variable.';
+      if (TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
+        document.getElementById('location').textContent = 'TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.';
         return;
       }
       getUserLocationSunTimes();
