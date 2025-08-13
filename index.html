@@ -10,58 +10,123 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
-  <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
-    <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">Sunrise and Sunset Times</h1>
+  <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full" aria-label="Sunrise and Sunset Times App">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-4 flex items-center justify-center gap-2">
+      <span>🌅</span> Sunrise & Sunset Times <span>🌇</span>
+    </h1>
     <div class="flex flex-col gap-4">
-      <div class="relative">
-        <input type="text" id="searchInput" placeholder="Enter city or address" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="relative" aria-label="Location Search">
+        <input type="text" id="searchInput" placeholder="Enter city or address" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search location">
         <div id="autocomplete-list" class="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-48 overflow-y-auto z-10 hidden"></div>
       </div>
-      <input type="date" id="dateInput" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="flex gap-2 items-center">
+        <input type="date" id="dateInput" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1" aria-label="Select date">
+        <button id="todayBtn" class="bg-yellow-400 text-white px-3 py-2 rounded-lg hover:bg-yellow-500" aria-label="Today">Today</button>
+      </div>
       <div class="flex gap-2">
-        <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Search</button>
-        <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600">Reset</button>
+        <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600" aria-label="Search">Search</button>
+        <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600" aria-label="Reset to my location">Reset</button>
       </div>
     </div>
-    <div class="mt-4 text-gray-700">
-      <p id="location">Fetching location...</p>
-      <p id="timezone">Timezone: --</p>
-      <p id="date">Date: --</p>
-      <p id="sunrise">Sunrise: --</p>
-      <p id="sunset">Sunset: --</p>
+    <div id="loadingSpinner" class="flex justify-center items-center mt-4 hidden" aria-live="polite">
+      <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+      <span class="ml-2 text-blue-500">Loading...</span>
+    </div>
+    <div id="errorMessage" class="mt-4 text-red-600 font-semibold hidden" role="alert"></div>
+    <div class="mt-4 text-gray-700" id="resultsPanel" aria-live="polite">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-blue-50 rounded-lg p-3 flex flex-col items-center">
+          <span class="text-lg font-semibold">Location</span>
+          <p id="location" class="text-center text-sm">Fetching location...</p>
+        </div>
+        <div class="bg-blue-50 rounded-lg p-3 flex flex-col items-center">
+          <span class="text-lg font-semibold">Timezone</span>
+          <p id="timezone" class="text-center text-sm">--</p>
+        </div>
+        <div class="bg-yellow-50 rounded-lg p-3 flex flex-col items-center">
+          <span class="text-lg font-semibold">Date</span>
+          <p id="date" class="text-center text-sm">--</p>
+        </div>
+        <div class="bg-pink-50 rounded-lg p-3 flex flex-col items-center">
+          <span class="text-lg font-semibold flex items-center gap-1"><span>🌅</span>Sunrise</span>
+          <p id="sunrise" class="text-center text-sm">--</p>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-3 flex flex-col items-center">
+          <span class="text-lg font-semibold flex items-center gap-1"><span>🌇</span>Sunset</span>
+          <p id="sunset" class="text-center text-sm">--</p>
+        </div>
+        <div class="bg-green-50 rounded-lg p-3 flex flex-col items-center">
+          <span class="text-lg font-semibold flex items-center gap-1"><span>🟡</span>Golden Hour</span>
+          <p id="goldenhour" class="text-center text-sm">--</p>
+        </div>
+        <div class="bg-blue-100 rounded-lg p-3 flex flex-col items-center">
+          <span class="text-lg font-semibold flex items-center gap-1"><span>🔵</span>Blue Hour</span>
+          <p id="bluehour" class="text-center text-sm">--</p>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 flex gap-2 justify-center">
+      <button id="shareBtn" class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600" aria-label="Share">Share</button>
+      <button id="favoriteBtn" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600" aria-label="Save Favorite">Save Favorite</button>
     </div>
   </div>
-  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg"></div>
+  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg" aria-label="Map"></div>
   <footer class="mt-4 text-sm text-gray-600 text-center">
     <p>Data provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline">OpenStreetMap</a> and <a href="https://nominatim.openstreetmap.org" target="_blank" class="underline">Nominatim</a>.</p>
+    <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300" aria-label="Toggle dark mode">Toggle Dark Mode</button>
   </footer>
 
   <script>
     const TIMEZONEDB_API_KEY = 'YOUR_API_KEY';
+    let map, marker, favorites = [];
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const errorMessage = document.getElementById('errorMessage');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const todayBtn = document.getElementById('todayBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    const themeToggle = document.getElementById('themeToggle');
 
-    let map, marker;
-
-    function initMap(lat, lon, locationName) {
-      if (map) {
-        map.remove();
-      }
-      map = L.map('map').setView([lat, lon], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-      marker = L.marker([lat, lon]).addTo(map)
-        .bindPopup(locationName)
-        .openPopup();
+    function showLoading(show) {
+      loadingSpinner.classList.toggle('hidden', !show);
+    }
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.remove('hidden');
+    }
+    function clearError() {
+      errorMessage.textContent = '';
+      errorMessage.classList.add('hidden');
     }
 
-    function getSunriseSunset(lat, lon, date, timezoneOffset) {
+    function updateResults({ location, timezone, date, sunrise, sunset, goldenhour, bluehour }) {
+      document.getElementById('location').textContent = location;
+      document.getElementById('timezone').textContent = timezone;
+      document.getElementById('date').textContent = date;
+      document.getElementById('sunrise').textContent = sunrise;
+      document.getElementById('sunset').textContent = sunset;
+      document.getElementById('goldenhour').textContent = goldenhour;
+      document.getElementById('bluehour').textContent = bluehour;
+    }
+
+    function getSunTimes(lat, lon, date, timezoneOffset) {
       const calcDate = date ? new Date(date) : new Date();
       const times = SunCalc.getTimes(calcDate, lat, lon);
       const offsetMs = timezoneOffset * 1000;
-      const sunrise = new Date(times.sunrise.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' });
-      const sunset = new Date(times.sunset.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' });
-      const formattedDate = calcDate.toLocaleDateString();
-      return { sunrise, sunset, formattedDate };
+      function format(dt) {
+        return dt ? new Date(dt.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' }) : '--';
+      }
+      // Golden hour: sunsetStart to sunsetEnd
+      const goldenhour = times.goldenHour ? format(times.goldenHour) : '--';
+      // Blue hour: dusk to night
+      const bluehour = times.dusk && times.night ? `${format(times.dusk)} - ${format(times.night)}` : '--';
+      return {
+        sunrise: format(times.sunrise),
+        sunset: format(times.sunset),
+        goldenhour,
+        bluehour,
+        date: calcDate.toLocaleDateString()
+      };
     }
 
     async function getLocationName(lat, lon) {
@@ -70,7 +135,6 @@
         const data = await response.json();
         return data.display_name || 'Unknown location';
       } catch (error) {
-        console.error('Location lookup error:', error);
         return 'Location lookup failed';
       }
     }
@@ -85,7 +149,6 @@
         if (data.status !== 'OK') throw new Error('Timezone lookup failed');
         return { zoneName: data.zoneName, offset: data.gmtOffset };
       } catch (error) {
-        console.error('Timezone lookup error:', error);
         return { zoneName: 'Unknown', offset: 0 };
       }
     }
@@ -97,7 +160,6 @@
         const data = await response.json();
         return data.map(item => item.display_name);
       } catch (error) {
-        console.error('Autocomplete error:', error);
         return [];
       }
     }
@@ -106,9 +168,9 @@
       const input = document.getElementById('searchInput');
       const autocompleteList = document.getElementById('autocomplete-list');
       let timeoutId;
-
       input.addEventListener('input', async () => {
         clearTimeout(timeoutId);
+        autocompleteList.innerHTML = '<div class="p-2 text-gray-400">Loading...</div>';
         timeoutId = setTimeout(async () => {
           const query = input.value.trim();
           const suggestions = await fetchSuggestions(query);
@@ -117,20 +179,31 @@
           if (suggestions.length > 0) {
             suggestions.forEach(suggestion => {
               const div = document.createElement('div');
-              div.textContent = suggestion;
+              // Highlight matching text
+              const regex = new RegExp(query, 'gi');
+              div.innerHTML = suggestion.replace(regex, match => `<span class='bg-yellow-200'>${match}</span>`);
               div.className = 'p-2 cursor-pointer hover:bg-gray-100';
+              div.tabIndex = 0;
+              div.setAttribute('role', 'option');
               div.addEventListener('click', () => {
                 input.value = suggestion;
                 autocompleteList.innerHTML = '';
                 autocompleteList.classList.add('hidden');
                 searchLocationSunTimes();
               });
+              div.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                  input.value = suggestion;
+                  autocompleteList.innerHTML = '';
+                  autocompleteList.classList.add('hidden');
+                  searchLocationSunTimes();
+                }
+              });
               autocompleteList.appendChild(div);
             });
           }
         }, 300);
       });
-
       document.addEventListener('click', e => {
         if (!input.contains(e.target) && !autocompleteList.contains(e.target)) {
           autocompleteList.innerHTML = '';
@@ -139,56 +212,154 @@
       });
     }
 
+    function saveFavorite(location, lat, lon, date) {
+      favorites.push({ location, lat, lon, date });
+      localStorage.setItem('sunsetFavorites', JSON.stringify(favorites));
+      favoriteBtn.textContent = 'Saved!';
+      setTimeout(() => favoriteBtn.textContent = 'Save Favorite', 1500);
+    }
+    function loadFavorites() {
+      const saved = localStorage.getItem('sunsetFavorites');
+      if (saved) favorites = JSON.parse(saved);
+    }
+
+    function shareResults() {
+      const location = document.getElementById('location').textContent;
+      const date = document.getElementById('date').textContent;
+      const sunrise = document.getElementById('sunrise').textContent;
+      const sunset = document.getElementById('sunset').textContent;
+      const text = `Sunrise & Sunset for ${location} on ${date}:\nSunrise: ${sunrise}\nSunset: ${sunset}`;
+      if (navigator.share) {
+        navigator.share({ title: 'Sunrise & Sunset Times', text });
+      } else {
+        navigator.clipboard.writeText(text);
+        shareBtn.textContent = 'Copied!';
+        setTimeout(() => shareBtn.textContent = 'Share', 1500);
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      if (document.body.classList.contains('dark')) {
+        document.body.classList.add('bg-gray-900');
+        document.body.classList.remove('bg-gray-100');
+      } else {
+        document.body.classList.remove('bg-gray-900');
+        document.body.classList.add('bg-gray-100');
+      }
+    }
+
+    function setToday() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('dateInput').value = today;
+    }
+
+    function showResultsPanel(show) {
+      resultsPanel.classList.toggle('hidden', !show);
+    }
+
+    function initMap(lat, lon, locationName) {
+      if (map) map.remove();
+      map = L.map('map').setView([lat, lon], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      marker = L.marker([lat, lon]).addTo(map)
+        .bindPopup(locationName)
+        .openPopup();
+      // Map click to select location
+      map.on('click', async function(e) {
+        showLoading(true);
+        clearError();
+        const lat = e.latlng.lat, lon = e.latlng.lng;
+        const locationName = await getLocationName(lat, lon);
+        try {
+          const { zoneName, offset } = await getTimezone(lat, lon);
+          const sun = getSunTimes(lat, lon, document.getElementById('dateInput').value, offset);
+          updateResults({
+            location: `${locationName} (Lat ${lat.toFixed(2)}, Lon ${lon.toFixed(2)})`,
+            timezone: zoneName,
+            date: sun.date,
+            sunrise: sun.sunrise,
+            sunset: sun.sunset,
+            goldenhour: sun.goldenhour,
+            bluehour: sun.bluehour
+          });
+          marker.setLatLng([lat, lon]).setPopupContent(locationName).openPopup();
+        } catch (error) {
+          showError(error.message || 'Map location error');
+        }
+        showLoading(false);
+      });
+    }
+
     async function searchLocationSunTimes() {
+      clearError();
+      showLoading(true);
+      showResultsPanel(true);
       const query = document.getElementById('searchInput').value.trim();
       const date = document.getElementById('dateInput').value;
       if (!query) {
-        document.getElementById('location').textContent = 'Please enter a location';
+        showError('Please enter a location');
+        showLoading(false);
         return;
       }
-
       try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
         const data = await response.json();
         if (data.length === 0) {
-          document.getElementById('location').textContent = 'Location not found';
+          showError('Location not found');
+          showLoading(false);
           return;
         }
-
         const { lat, lon, display_name } = data[0];
         const { zoneName, offset } = await getTimezone(lat, lon);
-        const { sunrise, sunset, formattedDate } = getSunriseSunset(lat, lon, date, offset);
-        document.getElementById('location').textContent = `Location: ${display_name} (Lat ${parseFloat(lat).toFixed(2)}, Lon ${parseFloat(lon).toFixed(2)})`;
-        document.getElementById('timezone').textContent = `Timezone: ${zoneName}`;
-        document.getElementById('date').textContent = `Date: ${formattedDate}`;
-        document.getElementById('sunrise').textContent = `Sunrise: ${sunrise}`;
-        document.getElementById('sunset').textContent = `Sunset: ${sunset}`;
+        const sun = getSunTimes(lat, lon, date, offset);
+        updateResults({
+          location: `${display_name} (Lat ${parseFloat(lat).toFixed(2)}, Lon ${parseFloat(lon).toFixed(2)})`,
+          timezone: zoneName,
+          date: sun.date,
+          sunrise: sun.sunrise,
+          sunset: sun.sunset,
+          goldenhour: sun.goldenhour,
+          bluehour: sun.bluehour
+        });
         initMap(parseFloat(lat), parseFloat(lon), display_name);
+        favoriteBtn.onclick = () => saveFavorite(display_name, lat, lon, date);
       } catch (error) {
-        document.getElementById('location').textContent = error.message || 'Search failed';
-        console.error('Search error:', error);
+        showError(error.message || 'Search failed');
       }
+      showLoading(false);
     }
 
     async function getUserLocationSunTimes() {
+      clearError();
+      showLoading(true);
+      showResultsPanel(true);
       if (!navigator.geolocation) {
-        document.getElementById('location').textContent = 'Geolocation not supported';
+        showError('Geolocation not supported');
+        showLoading(false);
         return;
       }
-
       const date = document.getElementById('dateInput').value;
       navigator.geolocation.getCurrentPosition(
         async position => {
           const { latitude, longitude } = position.coords;
           const { zoneName, offset } = await getTimezone(latitude, longitude);
-          const { sunrise, sunset, formattedDate } = getSunriseSunset(latitude, longitude, date, offset);
+          const sun = getSunTimes(latitude, longitude, date, offset);
           const locationName = await getLocationName(latitude, longitude);
-          document.getElementById('location').textContent = `Location: ${locationName} (Lat ${latitude.toFixed(2)}, Lon ${longitude.toFixed(2)})`;
-          document.getElementById('timezone').textContent = `Timezone: ${zoneName}`;
-          document.getElementById('date').textContent = `Date: ${formattedDate}`;
-          document.getElementById('sunrise').textContent = `Sunrise: ${sunrise}`;
-          document.getElementById('sunset').textContent = `Sunset: ${sunset}`;
+          updateResults({
+            location: `${locationName} (Lat ${latitude.toFixed(2)}, Lon ${longitude.toFixed(2)})`,
+            timezone: zoneName,
+            date: sun.date,
+            sunrise: sun.sunrise,
+            sunset: sun.sunset,
+            goldenhour: sun.goldenhour,
+            bluehour: sun.bluehour
+          });
           initMap(latitude, longitude, locationName);
+          favoriteBtn.onclick = () => saveFavorite(locationName, latitude, longitude, date);
+          showLoading(false);
         },
         error => {
           let errorMessage = 'Unable to fetch location';
@@ -203,8 +374,8 @@
               errorMessage = 'Location request timed out';
               break;
           }
-          document.getElementById('location').textContent = errorMessage;
-          console.error('Geolocation error:', error.message);
+          showError(errorMessage);
+          showLoading(false);
         },
         { timeout: 10000, maximumAge: 60000 }
       );
@@ -213,17 +384,23 @@
     function resetToUserLocation() {
       document.getElementById('searchInput').value = '';
       document.getElementById('autocomplete-list').innerHTML = '';
-      document.getElementById('dateInput').value = '';
+      setToday();
       getUserLocationSunTimes();
     }
 
     window.onload = () => {
       if (TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
-        document.getElementById('location').textContent = 'TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.';
+        showError('TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.');
+        showResultsPanel(false);
         return;
       }
+      setToday();
+      loadFavorites();
       getUserLocationSunTimes();
       setupAutocomplete();
+      todayBtn.onclick = setToday;
+      shareBtn.onclick = shareResults;
+      themeToggle.onclick = toggleTheme;
     };
   </script>
 </body>
