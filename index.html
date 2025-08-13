@@ -21,10 +21,10 @@
       </div>
       <div class="flex gap-2 items-center">
         <input type="date" id="dateInput" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1" aria-label="Select date">
-        <button id="todayBtn" class="bg-yellow-400 text-white px-3 py-2 rounded-lg hover:bg-yellow-500" aria-label="Today">Today</button>
+        <button id="todayBtn" class="bg-yellow-700 text-white px-3 py-2 rounded-lg hover:bg-yellow-800" aria-label="Today">Today</button>
       </div>
       <div class="flex gap-2">
-        <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600" aria-label="Search">Search</button>
+        <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-700 text-white p-2 rounded-lg hover:bg-blue-800" aria-label="Search">Search</button>
         <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600" aria-label="Reset to my location">Reset</button>
       </div>
     </div>
@@ -74,11 +74,11 @@
       </div>
     </div>
     <div class="mt-4 flex gap-2 justify-center">
-      <button id="shareBtn" class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600" aria-label="Share">Share</button>
-      <button id="favoriteBtn" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600" aria-label="Save Favorite">Save Favorite</button>
+      <button id="shareBtn" class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800" aria-label="Share">Share</button>
+      <button id="favoriteBtn" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800" aria-label="Save Favorite">Save Favorite</button>
     </div>
   </div>
-  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg" aria-label="Map"></div>
+  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg" role="region" aria-label="Map"></div>
   <footer class="mt-4 text-sm text-gray-600 text-center">
     <p>Data provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline">OpenStreetMap</a> and <a href="https://nominatim.openstreetmap.org" target="_blank" class="underline">Nominatim</a>.</p>
     <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300" aria-label="Toggle dark mode">Toggle Dark Mode</button>
