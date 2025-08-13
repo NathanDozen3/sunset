@@ -15,7 +15,7 @@ jobs:
           TIMEZONEDB_API_KEY: ${{ secrets.TIMEZONEDB_API_KEY }}
         run: sed -i "s/YOUR_API_KEY/$TIMEZONEDB_API_KEY/g" index.html
       - name: Show index.html after replacement
-        run: head index.html
+        run: head -n 45 index.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
