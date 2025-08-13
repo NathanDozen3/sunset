@@ -13,7 +13,7 @@ jobs:
       - name: Inject API Key
         env:
           TIMEZONEDB_API_KEY: ${{ secrets.TIMEZONEDB_API_KEY }}
-        run: sed -i "s/YOUR_API_KEY/$TIMEZONEDB_API_KEY/g" index.html
+        run: sed -i "s/const TIMEZONEDB_API_KEY = 'YOUR_API_KEY';/const TIMEZONEDB_API_KEY = '$TIMEZONEDB_API_KEY';/" index.html
       - name: Show index.html after replacement
         run: head -n 45 index.html
       - name: Deploy
