@@ -35,33 +35,39 @@
     <div id="errorMessage" class="mt-4 text-red-600 font-semibold hidden" role="alert"></div>
     <div class="mt-4 text-gray-700" id="resultsPanel" aria-live="polite">
       <div class="grid grid-cols-2 gap-4">
-        <div class="bg-blue-50 rounded-lg p-3 flex flex-col items-center">
+        <div class="col-span-2 bg-blue-50 rounded-lg p-3 flex flex-col items-center">
           <span class="text-lg font-semibold">Location</span>
           <p id="location" class="text-center text-sm">Fetching location...</p>
         </div>
-        <div class="bg-blue-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold">Timezone</span>
-          <p id="timezone" class="text-center text-sm">--</p>
+        <div class="col-span-2 flex gap-4 mt-2">
+          <div class="bg-blue-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+            <span class="text-lg font-semibold">Timezone</span>
+            <p id="timezone" class="text-center text-sm">--</p>
+          </div>
+          <div class="bg-yellow-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+            <span class="text-lg font-semibold">Date</span>
+            <p id="date" class="text-center text-sm">--</p>
+          </div>
         </div>
-        <div class="bg-yellow-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold">Date</span>
-          <p id="date" class="text-center text-sm">--</p>
+        <div class="col-span-2 flex gap-4">
+          <div class="bg-pink-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+            <span class="text-lg font-semibold flex items-center gap-1" title="Time when the sun rises above the horizon">🌅 Sunrise</span>
+            <p id="sunrise" class="text-center text-sm">--</p>
+          </div>
+          <div class="bg-purple-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+            <span class="text-lg font-semibold flex items-center gap-1" title="Time when the sun sets below the horizon">🌇 Sunset</span>
+            <p id="sunset" class="text-center text-sm">--</p>
+          </div>
         </div>
-        <div class="bg-pink-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold flex items-center gap-1"><span>🌅</span>Sunrise</span>
-          <p id="sunrise" class="text-center text-sm">--</p>
-        </div>
-        <div class="bg-purple-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold flex items-center gap-1"><span>🌇</span>Sunset</span>
-          <p id="sunset" class="text-center text-sm">--</p>
-        </div>
-        <div class="bg-green-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold flex items-center gap-1"><span>🟡</span>Golden Hour</span>
-          <p id="goldenhour" class="text-center text-sm">--</p>
-        </div>
-        <div class="bg-blue-100 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold flex items-center gap-1"><span>🔵</span>Blue Hour</span>
-          <p id="bluehour" class="text-center text-sm">--</p>
+        <div class="col-span-2 flex gap-4 mt-2">
+          <div class="bg-green-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+            <span class="text-lg font-semibold flex items-center gap-1" title="Period shortly after sunrise or before sunset when daylight is redder and softer">🟡 Golden Hour</span>
+            <p id="goldenhour" class="text-center text-sm">--</p>
+          </div>
+          <div class="bg-blue-100 rounded-lg p-3 flex-1 flex flex-col items-center">
+            <span class="text-lg font-semibold flex items-center gap-1" title="Period of twilight in the morning or evening when the sun is below the horizon and the sky is deep blue">🔵 Blue Hour</span>
+            <p id="bluehour" class="text-center text-sm">--</p>
+          </div>
         </div>
       </div>
     </div>
@@ -100,7 +106,14 @@
     }
 
     function updateResults({ location, timezone, date, sunrise, sunset, goldenhour, bluehour }) {
-      document.getElementById('location').textContent = location;
+      // If location contains (Lat xx, Lon xx), split to new line
+      const locElem = document.getElementById('location');
+      const match = location.match(/^(.*) \(Lat ([\d.-]+), Lon ([\d.-]+)\)$/);
+      if (match) {
+        locElem.innerHTML = `${match[1]}<br><span class='text-xs text-gray-500'>Lat ${match[2]}, Lon ${match[3]}</span>`;
+      } else {
+        locElem.textContent = location;
+      }
       document.getElementById('timezone').textContent = timezone;
       document.getElementById('date').textContent = date;
       document.getElementById('sunrise').textContent = sunrise;
