@@ -24,9 +24,14 @@ jobs:
         run: sed -i "s/const TIMEZONEDB_API_KEY = 'YOUR_API_KEY';/const TIMEZONEDB_API_KEY = '$TIMEZONEDB_API_KEY';/" index.html
       - name: Show index.html after replacement
         run: head -n 45 index.html
+      - name: Copy src directory to publish directory
+        run: |
+          mkdir -p ./publish/src
+          cp -r ./src/output.css ./publish/src/
+          cp index.html ./publish/
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: ./publish
           publish_branch: gh-pages
