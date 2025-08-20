@@ -109,7 +109,6 @@
     }
 
     function updateResults({ location, timezone, date, sunrise, sunset, goldenhourMorning, goldenhourEvening, bluehourMorning, bluehourEvening }) {
-      // If location contains (Lat xx, Lon xx), split to new line
       const locElem = document.getElementById('location');
       const match = location.match(/^(.*) \(Lat ([\d.-]+), Lon ([\d.-]+)\)$/);
       if (match) {
@@ -134,13 +133,9 @@
       function format(dt) {
         return dt ? new Date(dt.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' }) : '--';
       }
-      // Morning golden hour: sunriseEnd to goldenHourEnd
       const goldenhourMorning = times.sunriseEnd && times.goldenHourEnd ? `${format(times.sunriseEnd)} - ${format(times.goldenHourEnd)}` : '--';
-      // Evening golden hour: goldenHour to sunset
       const goldenhourEvening = times.goldenHour && times.sunset ? `${format(times.goldenHour)} - ${format(times.sunset)}` : '--';
-      // Morning blue hour: dawn to sunrise
       const bluehourMorning = times.dawn && times.sunrise ? `${format(times.dawn)} - ${format(times.sunrise)}` : '--';
-      // Evening blue hour: sunset to dusk
       const bluehourEvening = times.sunset && times.dusk ? `${format(times.sunset)} - ${format(times.dusk)}` : '--';
       return {
         sunrise: format(times.sunrise),
@@ -203,7 +198,6 @@
           if (suggestions.length > 0) {
             suggestions.forEach(suggestion => {
               const div = document.createElement('div');
-              // Highlight matching text
               const regex = new RegExp(query, 'gi');
               div.innerHTML = suggestion.replace(regex, match => `<span class='bg-yellow-200'>${match}</span>`);
               div.className = 'p-2 cursor-pointer hover:bg-gray-100';
@@ -291,7 +285,6 @@
       marker = L.marker([lat, lon]).addTo(map)
         .bindPopup(locationName)
         .openPopup();
-      // Map click to select location
       map.on('click', async function(e) {
         showLoading(true);
         clearError();
@@ -300,6 +293,7 @@
         try {
           const { zoneName, offset } = await getTimezone(lat, lon);
           const sun = getSunTimes(lat, lon, document.getElementById('dateInput').value, offset);
+          document.getElementById('searchInput').value = locationName; // Update searchInput
           updateResults({
             location: `${locationName} (Lat ${lat.toFixed(2)}, Lon ${lon.toFixed(2)})`,
             timezone: zoneName,
@@ -312,6 +306,7 @@
             bluehourEvening: sun.bluehourEvening
           });
           marker.setLatLng([lat, lon]).setPopupContent(locationName).openPopup();
+          favoriteBtn.onclick = () => saveFavorite(locationName, lat, lon, document.getElementById('dateInput').value);
         } catch (error) {
           showError(error.message || 'Map location error');
         }
@@ -341,6 +336,7 @@
         const { lat, lon, display_name } = data[0];
         const { zoneName, offset } = await getTimezone(lat, lon);
         const sun = getSunTimes(lat, lon, date, offset);
+        document.getElementById('searchInput').value = display_name; // Ensure searchInput is updated
         updateResults({
           location: `${display_name} (Lat ${parseFloat(lat).toFixed(2)}, Lon ${parseFloat(lon).toFixed(2)})`,
           timezone: zoneName,
@@ -376,6 +372,7 @@
           const { zoneName, offset } = await getTimezone(latitude, longitude);
           const sun = getSunTimes(latitude, longitude, date, offset);
           const locationName = await getLocationName(latitude, longitude);
+          document.getElementById('searchInput').value = locationName; // Update searchInput
           updateResults({
             location: `${locationName} (Lat ${latitude.toFixed(2)}, Lon ${longitude.toFixed(2)})`,
             timezone: zoneName,
