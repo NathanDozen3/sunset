@@ -75,9 +75,19 @@
     <div class="mt-4 flex gap-2 justify-center">
       <button id="shareBtn" class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 hover:cursor-pointer" aria-label="Share">Share</button>
       <button id="favoriteBtn" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800 hover:cursor-pointer" aria-label="Save Favorite">Save Favorite</button>
+      <button id="favoritesBtn" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 hover:cursor-pointer" aria-label="Show Favorites">Favorites</button>
     </div>
   </div>
-  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg hidden" role="region" aria-label="Map"></div>
+  <div id="favoritesModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50" role="dialog" aria-labelledby="favoritesModalTitle">
+    <div class="bg-white rounded-lg p-6 max-w-lg w-full m-4">
+      <h2 id="favoritesModalTitle" class="text-xl font-bold mb-4">Saved Favorites</h2>
+      <ul id="favoritesList" class="space-y-2 max-h-64 overflow-y-auto"></ul>
+      <div class="mt-4 flex justify-end">
+        <button onclick="closeFavoritesModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 hover:cursor-pointer" aria-label="Close Favorites">Close</button>
+      </div>
+    </div>
+  </div>
+  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg hidden z-0" role="region" aria-label="Map"></div>
   <footer class="mt-4 text-sm text-gray-600 text-center">
     <p>Data provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline">OpenStreetMap</a> and <a href="https://nominatim.openstreetmap.org" target="_blank" class="underline">Nominatim</a>.</p>
     <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 hover:cursor-pointer" aria-label="Toggle dark mode">Toggle Dark Mode</button>
@@ -95,7 +105,9 @@
     const todayBtn = document.getElementById('todayBtn');
     const shareBtn = document.getElementById('shareBtn');
     const favoriteBtn = document.getElementById('favoriteBtn');
-    const themeToggle = document.getElementById('themeToggle');
+    const favoritesBtn = document.getElementById('favoritesBtn');
+    const favoritesModal = document.getElementById('favoritesModal');
+    const favoritesList = document.getElementById('favoritesList');
 
     function showLoading(show) {
       loadingSpinner.classList.toggle('hidden', !show);
@@ -229,14 +241,94 @@
     }
 
     function saveFavorite(location, lat, lon, date) {
-      favorites.push({ location, lat, lon, date });
+      const exists = favorites.some(fav => fav.location === location && fav.date === date);
+      if (exists) {
+        showError('This location and date is already saved as a favorite');
+        favoriteBtn.textContent = 'Already Saved';
+        setTimeout(() => favoriteBtn.textContent = 'Save Favorite', 1500);
+        return;
+      }
+      favorites.push({ location, lat: parseFloat(lat), lon: parseFloat(lon), date });
       localStorage.setItem('sunsetFavorites', JSON.stringify(favorites));
       favoriteBtn.textContent = 'Saved!';
       setTimeout(() => favoriteBtn.textContent = 'Save Favorite', 1500);
     }
+
     function loadFavorites() {
       const saved = localStorage.getItem('sunsetFavorites');
       if (saved) favorites = JSON.parse(saved);
+      updateFavoritesList();
+    }
+
+    function updateFavoritesList() {
+      favoritesList.innerHTML = '';
+      if (favorites.length === 0) {
+        favoritesList.innerHTML = '<li class="text-gray-500">No favorites saved</li>';
+        return;
+      }
+      favorites.forEach((fav, index) => {
+        const li = document.createElement('li');
+        li.className = 'flex flex-col gap-2 justify-between items-center p-2 bg-gray-100 rounded-lg';
+        li.innerHTML = `
+          <span class="text-sm">${fav.location} (${fav.date})</span>
+          <div class="flex gap-2">
+            <button class="load-btn bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 hover:cursor-pointer" data-index="${index}" aria-label="Load favorite ${fav.location}">Load</button>
+            <button class="delete-btn bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 hover:cursor-pointer" data-index="${index}" aria-label="Delete favorite ${fav.location}">Delete</button>
+          </div>
+        `;
+        favoritesList.appendChild(li);
+      });
+      document.querySelectorAll('.load-btn').forEach(btn => {
+        btn.addEventListener('click', () => loadFavorite(btn.dataset.index));
+      });
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteFavorite(btn.dataset.index));
+      });
+    }
+
+    function loadFavorite(index) {
+      const fav = favorites[index];
+      if (!fav) return;
+      document.getElementById('searchInput').value = fav.location;
+      document.getElementById('dateInput').value = fav.date;
+      showLoading(true);
+      showResultsPanel(true);
+      getTimezone(fav.lat, fav.lon).then(({ zoneName, offset }) => {
+        const sun = getSunTimes(fav.lat, fav.lon, fav.date, offset);
+        updateResults({
+          location: `${fav.location} (Lat ${fav.lat.toFixed(2)}, Lon ${fav.lon.toFixed(2)})`,
+          timezone: zoneName,
+          date: sun.date,
+          sunrise: sun.sunrise,
+          sunset: sun.sunset,
+          goldenhourMorning: sun.goldenhourMorning,
+          goldenhourEvening: sun.goldenhourEvening,
+          bluehourMorning: sun.bluehourMorning,
+          bluehourEvening: sun.bluehourEvening
+        });
+        initMap(fav.lat, fav.lon, fav.location);
+        favoriteBtn.onclick = () => saveFavorite(fav.location, fav.lat, fav.lon, fav.date);
+        closeFavoritesModal();
+        showLoading(false);
+      }).catch(error => {
+        showError(error.message || 'Failed to load favorite');
+        showLoading(false);
+      });
+    }
+
+    function deleteFavorite(index) {
+      favorites.splice(index, 1);
+      localStorage.setItem('sunsetFavorites', JSON.stringify(favorites));
+      updateFavoritesList();
+    }
+
+    function openFavoritesModal() {
+      updateFavoritesList();
+      favoritesModal.classList.remove('hidden');
+    }
+
+    function closeFavoritesModal() {
+      favoritesModal.classList.add('hidden');
     }
 
     function shareResults() {
@@ -420,6 +512,7 @@
       setupAutocomplete();
       todayBtn.onclick = setToday;
       shareBtn.onclick = shareResults;
+      favoritesBtn.onclick = openFavoritesModal;
       themeToggle.onclick = toggleTheme;
       showResultsPanel(false);
     };
