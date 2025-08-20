@@ -130,7 +130,6 @@
     function getSunTimes(lat, lon, date, timezoneOffset) {
       const calcDate = date ? new Date(date + 'T00:00:00') : new Date();
       const times = SunCalc.getTimes(calcDate, lat, lon);
-      console.log(times)
       const offsetMs = timezoneOffset * 1000;
       function format(dt) {
         return dt ? new Date(dt.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' }) : '--';
