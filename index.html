@@ -8,18 +8,18 @@
   <link rel="stylesheet" href="src/output.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-start p-4">
-  <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
-    <h1 class="text-3xl font-bold text-center text-gray-800 mb-4 flex items-center justify-center gap-2">
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col items-center justify-start p-4">
+  <div class="bg-white dark:bg-black rounded-lg shadow-lg p-6 max-w-lg w-full">
+    <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4 flex items-center justify-center gap-2">
       <span>🌅</span> Sunrise & Sunset Times <span>🌇</span>
     </h1>
     <div class="flex flex-col gap-4">
       <div class="relative">
-        <input type="text" id="searchInput" placeholder="Enter city or address" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search location">
+        <input type="text" id="searchInput" placeholder="Enter city or address" class="bg-white dark:bg-gray-100 placeholder:text-gray-800 w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search location">
         <div id="autocomplete-list" class="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-48 overflow-y-auto z-10 hidden"></div>
       </div>
       <div class="flex gap-2 items-center">
-        <input type="date" id="dateInput" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1" aria-label="Select date">
+        <input type="date" id="dateInput" class="bg-white dark:bg-gray-100 text-gray-800 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1" aria-label="Select date">
         <button id="todayBtn" class="bg-yellow-700 text-white px-3 py-2 rounded-lg hover:bg-yellow-800 hover:cursor-pointer" aria-label="Today">Today</button>
       </div>
       <div class="flex gap-2">
@@ -27,54 +27,48 @@
         <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 hover:cursor-pointer" aria-label="Use my location">Use My Location</button>
       </div>
     </div>
-    <div id="loadingSpinner" class="flex justify-center items-center mt-4 hidden" aria-live="polite">
+    <div id="loadingSpinner" class="hidden justify-center items-center mt-4" aria-live="polite">
       <svg class="animate-spin h-8 w-8 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
       <span class="ml-2 text-blue-700">Loading...</span>
     </div>
     <div id="errorMessage" class="mt-4 text-red-600 font-semibold hidden" role="alert"></div>
     <div class="mt-4 text-gray-700 hidden" id="resultsPanel" aria-live="polite">
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-2 md:gap-4">
         <div class="col-span-2 bg-blue-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-lg font-semibold"><span title="Location">📍</span> Location</span>
+          <span class="text-base md:text-lg font-semibold"><span title="Location">📍</span> Location</span>
           <p id="location" class="text-center text-sm">Enter a location or use Use My Location</p>
         </div>
-        <div class="col-span-2 flex gap-4 mt-2">
-          <div class="bg-blue-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold"><span title="Timezone">🕒</span> Timezone</span>
-            <p id="timezone" class="text-center text-sm">--</p>
-          </div>
-          <div class="bg-yellow-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold"><span title="Date">📅</span> Date</span>
-            <p id="date" class="text-center text-sm">--</p>
-          </div>
+        <div class="bg-blue-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+          <span class="text-base md:text-lg font-semibold"><span title="Timezone">🕒</span> Timezone</span>
+          <p id="timezone" class="text-center text-sm">--</p>
         </div>
-        <div class="col-span-2 flex gap-4">
-          <div class="bg-pink-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold flex items-center gap-1" title="Time when the sun rises above the horizon">🌅 Sunrise</span>
-            <p id="sunrise" class="text-center text-sm">--</p>
-          </div>
-          <div class="bg-purple-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold flex items-center gap-1" title="Time when the sun sets below the horizon">🌇 Sunset</span>
-            <p id="sunset" class="text-center text-sm">--</p>
-          </div>
+        <div class="bg-yellow-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+          <span class="text-base md:text-lg font-semibold"><span title="Date">📅</span> Date</span>
+          <p id="date" class="text-center text-sm">--</p>
         </div>
-        <div class="col-span-2 flex gap-4 mt-2">
-          <div class="bg-green-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold flex items-center gap-1" title="Period shortly after sunrise or before sunset when daylight is redder and softer">🟡 Golden Hour</span>
-            <p id="goldenhour-morning" class="text-center text-xs">--</p>
-            <p id="goldenhour-evening" class="text-center text-xs mt-1">--</p>
-          </div>
-          <div class="bg-blue-100 rounded-lg p-3 flex-1 flex flex-col items-center">
-            <span class="text-lg font-semibold flex items-center gap-1" title="Period of twilight in the morning or evening when the sun is below the horizon and the sky is deep blue">🔵 Blue Hour</span>
-            <p id="bluehour-morning" class="text-center text-xs">--</p>
-            <p id="bluehour-evening" class="text-center text-xs mt-1">--</p>
-          </div>
+        <div class="bg-pink-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+          <span class="text-base md:text-lg font-semibold" title="Time when the sun rises above the horizon">🌅 Sunrise</span>
+          <p id="sunrise" class="text-center text-sm">--</p>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+          <span class="text-base md:text-lg font-semibold" title="Time when the sun sets below the horizon">🌇 Sunset</span>
+          <p id="sunset" class="text-center text-sm">--</p>
+        </div>
+        <div class="bg-green-50 rounded-lg p-3 flex-1 flex flex-col items-center">
+          <span class="text-base md:text-lg font-semibold" title="Period shortly after sunrise or before sunset when daylight is redder and softer">🟡 Golden Hour</span>
+          <p id="goldenhour-morning" class="text-center text-xs">--</p>
+          <p id="goldenhour-evening" class="text-center text-xs mt-1">--</p>
+        </div>
+        <div class="bg-blue-100 rounded-lg p-3 flex-1 flex flex-col items-center">
+          <span class="text-base md:text-lg font-semibold" title="Period of twilight in the morning or evening when the sun is below the horizon and the sky is deep blue">🔵 Blue Hour</span>
+          <p id="bluehour-morning" class="text-center text-xs">--</p>
+          <p id="bluehour-evening" class="text-center text-xs mt-1">--</p>
         </div>
       </div>
     </div>
     <div class="mt-4 flex gap-2 justify-center">
       <button id="shareBtn" class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 hover:cursor-pointer" aria-label="Share">Share</button>
-      <button id="favoriteBtn" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800 hover:cursor-pointer" aria-label="Save Favorite">Save Favorite</button>
+      <button id="favoriteBtn" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800 hover:cursor-pointer" aria-label="Save">Save</button>
       <button id="favoritesBtn" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 hover:cursor-pointer" aria-label="Show Favorites">Favorites</button>
     </div>
   </div>
@@ -88,8 +82,8 @@
     </div>
   </div>
   <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg hidden z-0" role="region" aria-label="Map"></div>
-  <footer class="mt-4 text-sm text-gray-600 text-center">
-    <p>Data provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline">OpenStreetMap</a> and <a href="https://nominatim.openstreetmap.org" target="_blank" class="underline">Nominatim</a>.</p>
+  <footer class="mt-4 text-sm text-center">
+    <p class="text-gray-800 dark:text-gray-200">Data provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline">OpenStreetMap</a> and <a href="https://nominatim.openstreetmap.org" target="_blank" class="underline">Nominatim</a>.</p>
     <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 hover:cursor-pointer" aria-label="Toggle dark mode">Toggle Dark Mode</button>
   </footer>
 
@@ -111,6 +105,7 @@
 
     function showLoading(show) {
       loadingSpinner.classList.toggle('hidden', !show);
+      loadingSpinner.classList.toggle('flex', show);
     }
     function showError(msg) {
       errorMessage.textContent = msg;
@@ -125,7 +120,8 @@
       const locElem = document.getElementById('location');
       const match = location.match(/^(.*) \(Lat ([\d.-]+), Lon ([\d.-]+)\)$/);
       if (match) {
-        locElem.innerHTML = `${match[1]}<br><span class='text-xs text-gray-500'>Lat ${match[2]}, Lon ${match[3]}</span>`;
+        let inner = match[1].replaceAll(', ', '<br class="md:hidden"><span class="hidden md:inline">, </span>');
+        locElem.innerHTML = `${inner}<br><span class='text-xs text-gray-500'>Lat ${match[2]}, Lon ${match[3]}</span>`;
       } else {
         locElem.textContent = location;
       }
@@ -245,13 +241,13 @@
       if (exists) {
         showError('This location and date is already saved as a favorite');
         favoriteBtn.textContent = 'Already Saved';
-        setTimeout(() => favoriteBtn.textContent = 'Save Favorite', 1500);
+        setTimeout(() => favoriteBtn.textContent = 'Save', 1500);
         return;
       }
       favorites.push({ location, lat: parseFloat(lat), lon: parseFloat(lon), date });
       localStorage.setItem('sunsetFavorites', JSON.stringify(favorites));
       favoriteBtn.textContent = 'Saved!';
-      setTimeout(() => favoriteBtn.textContent = 'Save Favorite', 1500);
+      setTimeout(() => favoriteBtn.textContent = 'Save', 1500);
     }
 
     function loadFavorites() {
@@ -293,6 +289,7 @@
       document.getElementById('dateInput').value = fav.date;
       showLoading(true);
       showResultsPanel(true);
+      clearError();
       getTimezone(fav.lat, fav.lon).then(({ zoneName, offset }) => {
         const sun = getSunTimes(fav.lat, fav.lon, fav.date, offset);
         updateResults({
@@ -348,13 +345,6 @@
 
     function toggleTheme() {
       document.body.classList.toggle('dark');
-      if (document.body.classList.contains('dark')) {
-        document.body.classList.add('bg-gray-900');
-        document.body.classList.remove('bg-gray-100');
-      } else {
-        document.body.classList.remove('bg-gray-900');
-        document.body.classList.add('bg-gray-100');
-      }
     }
 
     function setToday() {
