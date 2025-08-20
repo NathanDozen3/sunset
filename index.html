@@ -24,19 +24,19 @@
       </div>
       <div class="flex gap-2">
         <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-700 text-white p-2 rounded-lg hover:bg-blue-800" aria-label="Search">Search</button>
-        <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600" aria-label="Reset to my location">Reset</button>
+        <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600" aria-label="Use my location">Use My Location</button>
       </div>
     </div>
     <div id="loadingSpinner" class="flex justify-center items-center mt-4 hidden" aria-live="polite">
-      <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-      <span class="ml-2 text-blue-500">Loading...</span>
+      <svg class="animate-spin h-8 w-8 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+      <span class="ml-2 text-blue-700">Loading...</span>
     </div>
     <div id="errorMessage" class="mt-4 text-red-600 font-semibold hidden" role="alert"></div>
-    <div class="mt-4 text-gray-700" id="resultsPanel" aria-live="polite">
+    <div class="mt-4 text-gray-700 hidden" id="resultsPanel" aria-live="polite">
       <div class="grid grid-cols-2 gap-4">
         <div class="col-span-2 bg-blue-50 rounded-lg p-3 flex flex-col items-center">
           <span class="text-lg font-semibold"><span title="Location">📍</span> Location</span>
-          <p id="location" class="text-center text-sm">Fetching location...</p>
+          <p id="location" class="text-center text-sm">Enter a location or use Use My Location</p>
         </div>
         <div class="col-span-2 flex gap-4 mt-2">
           <div class="bg-blue-50 rounded-lg p-3 flex-1 flex flex-col items-center">
@@ -83,8 +83,8 @@
     <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300" aria-label="Toggle dark mode">Toggle Dark Mode</button>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script>
     const TIMEZONEDB_API_KEY = 'B0HKRH0IGONF';
@@ -160,9 +160,6 @@
     }
 
     async function getTimezone(lat, lon) {
-      if (TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
-        throw new Error('TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.');
-      }
       try {
         const response = await fetch(`https://api.timezonedb.com/v2.1/get-time-zone?key=${TIMEZONEDB_API_KEY}&format=json&by=position&lat=${lat}&lng=${lon}`);
         const data = await response.json();
@@ -294,7 +291,7 @@
         try {
           const { zoneName, offset } = await getTimezone(lat, lon);
           const sun = getSunTimes(lat, lon, document.getElementById('dateInput').value, offset);
-          document.getElementById('searchInput').value = locationName; // Update searchInput
+          document.getElementById('searchInput').value = locationName;
           updateResults({
             location: `${locationName} (Lat ${lat.toFixed(2)}, Lon ${lon.toFixed(2)})`,
             timezone: zoneName,
@@ -337,7 +334,7 @@
         const { lat, lon, display_name } = data[0];
         const { zoneName, offset } = await getTimezone(lat, lon);
         const sun = getSunTimes(lat, lon, date, offset);
-        document.getElementById('searchInput').value = display_name; // Ensure searchInput is updated
+        document.getElementById('searchInput').value = display_name;
         updateResults({
           location: `${display_name} (Lat ${parseFloat(lat).toFixed(2)}, Lon ${parseFloat(lon).toFixed(2)})`,
           timezone: zoneName,
@@ -373,7 +370,7 @@
           const { zoneName, offset } = await getTimezone(latitude, longitude);
           const sun = getSunTimes(latitude, longitude, date, offset);
           const locationName = await getLocationName(latitude, longitude);
-          document.getElementById('searchInput').value = locationName; // Update searchInput
+          document.getElementById('searchInput').value = locationName;
           updateResults({
             location: `${locationName} (Lat ${latitude.toFixed(2)}, Lon ${longitude.toFixed(2)})`,
             timezone: zoneName,
@@ -417,18 +414,13 @@
     }
 
     window.onload = () => {
-      if (TIMEZONEDB_API_KEY === 'YOUR_API_KEY') {
-        showError('TimeZoneDB API key missing. Please configure the TIMEZONEDB_API_KEY.');
-        showResultsPanel(false);
-        return;
-      }
       setToday();
       loadFavorites();
-      getUserLocationSunTimes();
       setupAutocomplete();
       todayBtn.onclick = setToday;
       shareBtn.onclick = shareResults;
       themeToggle.onclick = toggleTheme;
+      showResultsPanel(false); // Hide results panel initially
     };
   </script>
 </body>
