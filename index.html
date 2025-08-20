@@ -130,6 +130,7 @@
     function getSunTimes(lat, lon, date, timezoneOffset) {
       const calcDate = date ? new Date(date + 'T00:00:00') : new Date();
       const times = SunCalc.getTimes(calcDate, lat, lon);
+      console.log(times)
       const offsetMs = timezoneOffset * 1000;
       function format(dt) {
         return dt ? new Date(dt.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' }) : '--';
@@ -140,8 +141,8 @@
       const goldenhourEvening = times.goldenHour && times.sunset ? `${format(times.goldenHour)} - ${format(times.sunset)}` : '--';
       // Morning blue hour: dawn to sunrise
       const bluehourMorning = times.dawn && times.sunrise ? `${format(times.dawn)} - ${format(times.sunrise)}` : '--';
-      // Evening blue hour: dusk to night
-      const bluehourEvening = times.dusk && times.night ? `${format(times.dusk)} - ${format(times.night)}` : '--';
+      // Evening blue hour: sunset to dusk
+      const bluehourEvening = times.sunset && times.dusk ? `${format(times.sunset)} - ${format(times.dusk)}` : '--';
       return {
         sunrise: format(times.sunrise),
         sunset: format(times.sunset),
