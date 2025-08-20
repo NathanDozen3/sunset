@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="src/output.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-start p-4">
   <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
     <h1 class="text-3xl font-bold text-center text-gray-800 mb-4 flex items-center justify-center gap-2">
       <span>🌅</span> Sunrise & Sunset Times <span>🌇</span>
@@ -20,11 +20,11 @@
       </div>
       <div class="flex gap-2 items-center">
         <input type="date" id="dateInput" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1" aria-label="Select date">
-        <button id="todayBtn" class="bg-yellow-700 text-white px-3 py-2 rounded-lg hover:bg-yellow-800" aria-label="Today">Today</button>
+        <button id="todayBtn" class="bg-yellow-700 text-white px-3 py-2 rounded-lg hover:bg-yellow-800 hover:cursor-pointer" aria-label="Today">Today</button>
       </div>
       <div class="flex gap-2">
-        <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-700 text-white p-2 rounded-lg hover:bg-blue-800" aria-label="Search">Search</button>
-        <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600" aria-label="Use my location">Use My Location</button>
+        <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-700 text-white p-2 rounded-lg hover:bg-blue-800 hover:cursor-pointer" aria-label="Search">Search</button>
+        <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 hover:cursor-pointer" aria-label="Use my location">Use My Location</button>
       </div>
     </div>
     <div id="loadingSpinner" class="flex justify-center items-center mt-4 hidden" aria-live="polite">
@@ -73,14 +73,14 @@
       </div>
     </div>
     <div class="mt-4 flex gap-2 justify-center">
-      <button id="shareBtn" class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800" aria-label="Share">Share</button>
-      <button id="favoriteBtn" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800" aria-label="Save Favorite">Save Favorite</button>
+      <button id="shareBtn" class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 hover:cursor-pointer" aria-label="Share">Share</button>
+      <button id="favoriteBtn" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800 hover:cursor-pointer" aria-label="Save Favorite">Save Favorite</button>
     </div>
   </div>
-  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg" role="region" aria-label="Map"></div>
+  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg hidden" role="region" aria-label="Map"></div>
   <footer class="mt-4 text-sm text-gray-600 text-center">
     <p>Data provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline">OpenStreetMap</a> and <a href="https://nominatim.openstreetmap.org" target="_blank" class="underline">Nominatim</a>.</p>
-    <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300" aria-label="Toggle dark mode">Toggle Dark Mode</button>
+    <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 hover:cursor-pointer" aria-label="Toggle dark mode">Toggle Dark Mode</button>
   </footer>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
@@ -275,6 +275,7 @@
     }
 
     function initMap(lat, lon, locationName) {
+      document.getElementById('map').classList.remove('hidden'); // Show map
       if (map) map.remove();
       map = L.map('map').setView([lat, lon], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -420,7 +421,7 @@
       todayBtn.onclick = setToday;
       shareBtn.onclick = shareResults;
       themeToggle.onclick = toggleTheme;
-      showResultsPanel(false); // Hide results panel initially
+      showResultsPanel(false);
     };
   </script>
 </body>
