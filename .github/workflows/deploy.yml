@@ -17,7 +17,7 @@ jobs:
       - name: Install Dependencies
         run: npm install tailwindcss postcss autoprefixer
       - name: Build Tailwind CSS
-        run: npx tailwindcss -i ./src/input.css -o ./src/output.css
+        run: npx tailwindcss -i ./src/input.css -o ./src/output.css --minify
       - name: Inject API Key
         env:
           TIMEZONEDB_API_KEY: ${{ secrets.TIMEZONEDB_API_KEY }}
