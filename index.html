@@ -10,16 +10,14 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col items-center justify-start p-4">
   <div class="bg-white dark:bg-black rounded-lg shadow-lg p-6 max-w-lg w-full">
-    <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4 flex items-center justify-center gap-2">
-      <span>🌅</span> Sunrise & Sunset Times <span>🌇</span>
-    </h1>
+    <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4 flex items-center justify-center gap-2">Sunrise & Sunset Times</h1>
     <div class="flex flex-col gap-4">
       <div class="relative">
-        <input type="text" id="searchInput" placeholder="Enter city or address" class="bg-white dark:bg-gray-100 placeholder:text-gray-800 w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search location">
-        <div id="autocomplete-list" class="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-48 overflow-y-auto z-10 hidden"></div>
+        <input type="text" id="searchInput" placeholder="Enter city or address" class="bg-white placeholder:text-gray-800 text-gray-800 dark:bg-gray-800 dark:placeholder:text-gray-100 dark:text-gray-100 w-full p-2 border dark:border-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search location">
+        <div id="autocomplete-list" class="absolute w-full bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-300 rounded-lg mt-1 max-h-48 overflow-y-auto z-10 hidden"></div>
       </div>
       <div class="flex gap-2 items-center">
-        <input type="date" id="dateInput" class="bg-white dark:bg-gray-100 text-gray-800 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1" aria-label="Select date">
+        <input type="date" id="dateInput" class="bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-100 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 dark:[&::-webkit-calendar-picker-indicator]:invert" aria-label="Select date">
         <button id="todayBtn" class="bg-yellow-700 text-white px-3 py-2 rounded-lg hover:bg-yellow-800 hover:cursor-pointer" aria-label="Today">Today</button>
       </div>
       <div class="flex gap-2">
@@ -32,37 +30,43 @@
       <span class="ml-2 text-blue-700">Loading...</span>
     </div>
     <div id="errorMessage" class="mt-4 text-red-600 font-semibold hidden" role="alert"></div>
-    <div class="mt-4 text-gray-700 hidden" id="resultsPanel" aria-live="polite">
-      <div class="grid grid-cols-2 gap-2 md:gap-4">
-        <div class="col-span-2 bg-blue-50 rounded-lg p-3 flex flex-col items-center">
-          <span class="text-base md:text-lg font-semibold"><span title="Location">📍</span> Location</span>
-          <p id="location" class="text-center text-sm">Enter a location or use Use My Location</p>
+    <div class="mt-4 text-gray-700 dark:text-gray-200 hidden" id="resultsPanel" aria-live="polite">
+      <div class="grid grid-cols-6 gap-2 md:gap-4">
+        <div class="col-span-6 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Location</span>
+          <p id="location" class="text-center text-sm text-gray-600 dark:text-gray-400">Enter a location or use Use My Location</p>
         </div>
-        <div class="bg-blue-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-          <span class="text-base md:text-lg font-semibold"><span title="Timezone">🕒</span> Timezone</span>
-          <p id="timezone" class="text-center text-sm">--</p>
+        <div class="col-span-3 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Timezone</span>
+          <p id="timezone" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
         </div>
-        <div class="bg-yellow-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-          <span class="text-base md:text-lg font-semibold"><span title="Date">📅</span> Date</span>
-          <p id="date" class="text-center text-sm">--</p>
+        <div class="col-span-3 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Date</span>
+          <p id="date" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
         </div>
-        <div class="bg-pink-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-          <span class="text-base md:text-lg font-semibold" title="Time when the sun rises above the horizon">🌅 Sunrise</span>
-          <p id="sunrise" class="text-center text-sm">--</p>
+        <div class="col-span-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Dawn</span>
+          <p id="bluehour-morning" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
         </div>
-        <div class="bg-purple-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-          <span class="text-base md:text-lg font-semibold" title="Time when the sun sets below the horizon">🌇 Sunset</span>
-          <p id="sunset" class="text-center text-sm">--</p>
+        <div class="col-span-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Sunrise</span>
+          <p id="sunrise" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
         </div>
-        <div class="bg-green-50 rounded-lg p-3 flex-1 flex flex-col items-center">
-          <span class="text-base md:text-lg font-semibold" title="Period shortly after sunrise or before sunset when daylight is redder and softer">🟡 Golden Hour</span>
-          <p id="goldenhour-morning" class="text-center text-xs">--</p>
-          <p id="goldenhour-evening" class="text-center text-xs mt-1">--</p>
+        <div class="col-span-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Golden</span>
+          <p id="goldenhour-morning" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
         </div>
-        <div class="bg-blue-100 rounded-lg p-3 flex-1 flex flex-col items-center">
-          <span class="text-base md:text-lg font-semibold" title="Period of twilight in the morning or evening when the sun is below the horizon and the sky is deep blue">🔵 Blue Hour</span>
-          <p id="bluehour-morning" class="text-center text-xs">--</p>
-          <p id="bluehour-evening" class="text-center text-xs mt-1">--</p>
+        <div class="col-span-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Golden</span>
+          <p id="goldenhour-evening" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
+        </div>
+        <div class="col-span-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Sunset</span>
+          <p id="sunset" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
+        </div>
+        <div class="col-span-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg py-3 md:p-3 flex-1 flex flex-col items-center justify-center shadow-md">
+          <span class="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-200">Dusk</span>
+          <p id="bluehour-evening" class="text-center text-sm text-gray-600 dark:text-gray-400">--</p>
         </div>
       </div>
     </div>
@@ -74,7 +78,7 @@
   </div>
   <div id="favoritesModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50" role="dialog" aria-labelledby="favoritesModalTitle">
     <div class="bg-white rounded-lg p-6 max-w-lg w-full m-4">
-      <h2 id="favoritesModalTitle" class="text-xl font-bold mb-4">Saved Favorites</h2>
+      <h2 id="favoritesModalTitle" class="text-xl font-bold mb-4 text-gray-800">Saved Favorites</h2>
       <ul id="favoritesList" class="space-y-2 max-h-64 overflow-y-auto"></ul>
       <div class="mt-4 flex justify-end">
         <button onclick="closeFavoritesModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 hover:cursor-pointer" aria-label="Close Favorites">Close</button>
@@ -118,21 +122,24 @@
 
     function updateResults({ location, timezone, date, sunrise, sunset, goldenhourMorning, goldenhourEvening, bluehourMorning, bluehourEvening }) {
       const locElem = document.getElementById('location');
-      const match = location.match(/^(.*) \(Lat ([\d.-]+), Lon ([\d.-]+)\)$/);
-      if (match) {
-        let inner = match[1].replaceAll(', ', '<br class="md:hidden"><span class="hidden md:inline">, </span>');
-        locElem.innerHTML = `${inner}<br><span class='text-xs text-gray-500'>Lat ${match[2]}, Lon ${match[3]}</span>`;
+      if (typeof location === 'string' && location) {
+        const match = location.match(/^(.*?) \(Lat ([\d.-]+), Lon ([\d.-]+)\)$/);
+        if (match) {
+          locElem.innerHTML = `${match[1].replaceAll(', ', '<br class="md:hidden"><span class="hidden md:inline">, </span>')}<br><span class='text-xs text-gray-500 dark:text-gray-400'>Lat ${match[2]}, Lon ${match[3]}</span>`;
+        } else {
+          locElem.textContent = location;
+        }
       } else {
-        locElem.textContent = location;
+        locElem.textContent = 'Unknown location';
       }
-      document.getElementById('timezone').textContent = timezone;
-      document.getElementById('date').textContent = date;
-      document.getElementById('sunrise').textContent = sunrise;
-      document.getElementById('sunset').textContent = sunset;
-      document.getElementById('goldenhour-morning').textContent = `Morning: ${goldenhourMorning}`;
-      document.getElementById('goldenhour-evening').textContent = `Evening: ${goldenhourEvening}`;
-      document.getElementById('bluehour-morning').textContent = `Morning: ${bluehourMorning}`;
-      document.getElementById('bluehour-evening').textContent = `Evening: ${bluehourEvening}`;
+      document.getElementById('timezone').textContent = timezone || '--';
+      document.getElementById('date').textContent = date || '--';
+      document.getElementById('sunrise').textContent = sunrise || '--';
+      document.getElementById('sunset').textContent = sunset || '--';
+      document.getElementById('goldenhour-morning').textContent = `${goldenhourMorning || '--'}`;
+      document.getElementById('goldenhour-evening').textContent = `${goldenhourEvening || '--'}`;
+      document.getElementById('bluehour-morning').textContent = `${bluehourMorning || '--'}`;
+      document.getElementById('bluehour-evening').textContent = `${bluehourEvening || '--'}`;
     }
 
     function getSunTimes(lat, lon, date, timezoneOffset) {
@@ -142,17 +149,13 @@
       function format(dt) {
         return dt ? new Date(dt.getTime() + offsetMs).toLocaleTimeString([], { timeZone: 'UTC' }) : '--';
       }
-      const goldenhourMorning = times.sunriseEnd && times.goldenHourEnd ? `${format(times.sunriseEnd)} - ${format(times.goldenHourEnd)}` : '--';
-      const goldenhourEvening = times.goldenHour && times.sunset ? `${format(times.goldenHour)} - ${format(times.sunset)}` : '--';
-      const bluehourMorning = times.dawn && times.sunrise ? `${format(times.dawn)} - ${format(times.sunrise)}` : '--';
-      const bluehourEvening = times.sunset && times.dusk ? `${format(times.sunset)} - ${format(times.dusk)}` : '--';
       return {
         sunrise: format(times.sunrise),
         sunset: format(times.sunset),
-        goldenhourMorning,
-        goldenhourEvening,
-        bluehourMorning,
-        bluehourEvening,
+        goldenhourMorning: format(times.goldenHourEnd),
+        goldenhourEvening: format(times.goldenHour),
+        bluehourMorning: format(times.dawn),
+        bluehourEvening: format(times.dusk),
         date: calcDate.toLocaleDateString()
       };
     }
@@ -205,8 +208,8 @@
             suggestions.forEach(suggestion => {
               const div = document.createElement('div');
               const regex = new RegExp(query, 'gi');
-              div.innerHTML = suggestion.replace(regex, match => `<span class='bg-yellow-200'>${match}</span>`);
-              div.className = 'p-2 cursor-pointer hover:bg-gray-100';
+              div.innerHTML = suggestion.replace(regex, match => `<span class='bg-yellow-200 dark:bg-amber-800'>${match}</span>`);
+              div.className = 'p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800';
               div.tabIndex = 0;
               div.setAttribute('role', 'option');
               div.addEventListener('click', () => {
