@@ -8,28 +8,28 @@
   <link rel="stylesheet" href="src/output.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col items-center justify-start p-4">
+<body class="bg-gray-100 dark:bg-black min-h-screen flex flex-col items-center justify-start p-4">
   <div class="bg-white dark:bg-black rounded-lg shadow-lg p-6 max-w-lg w-full">
     <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4 flex items-center justify-center gap-2">Sunrise & Sunset Times</h1>
     <div class="flex flex-col gap-4">
       <div class="relative">
-        <input type="text" id="searchInput" placeholder="Enter city or address" class="bg-white placeholder:text-gray-800 text-gray-800 dark:bg-gray-800 dark:placeholder:text-gray-100 dark:text-gray-100 w-full p-2 border dark:border-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search location">
+        <input type="text" id="searchInput" placeholder="Enter city or address" class=" w-full p-2 border rounded-lg focus:ring-2" aria-label="Search location">
         <div id="autocomplete-list" class="absolute w-full bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-300 rounded-lg mt-1 max-h-48 overflow-y-auto z-10 hidden"></div>
       </div>
       <div class="flex gap-2 items-center">
-        <input type="date" id="dateInput" class="bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-100 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 dark:[&::-webkit-calendar-picker-indicator]:invert" aria-label="Select date">
-        <button id="todayBtn" class="bg-yellow-700 text-white px-3 py-2 rounded-lg hover:bg-yellow-800 hover:cursor-pointer" aria-label="Today">Today</button>
+        <input type="date" id="dateInput" class="p-2 border rounded-lg focus:ring-2 flex-1 dark:[&::-webkit-calendar-picker-indicator]:invert" aria-label="Select date">
+        <button id="todayBtn" aria-label="Today">Today</button>
       </div>
       <div class="flex gap-2">
-        <button onclick="searchLocationSunTimes()" class="flex-1 bg-blue-700 text-white p-2 rounded-lg hover:bg-blue-800 hover:cursor-pointer" aria-label="Search">Search</button>
-        <button onclick="resetToUserLocation()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 hover:cursor-pointer" aria-label="Use my location">Use My Location</button>
+        <button onclick="searchLocationSunTimes()" class="flex-1" aria-label="Search">Search</button>
+        <button onclick="resetToUserLocation()" class="flex-1" aria-label="Use my location">Use My Location</button>
       </div>
     </div>
     <div id="loadingSpinner" class="hidden justify-center items-center mt-4" aria-live="polite">
-      <svg class="animate-spin h-8 w-8 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-      <span class="ml-2 text-blue-700">Loading...</span>
+      <svg class="animate-spin h-8 w-8 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+      <span class="ml-2 text-gray-700">Loading...</span>
     </div>
-    <div id="errorMessage" class="mt-4 text-red-600 font-semibold hidden" role="alert"></div>
+    <div id="errorMessage" class="mt-4 text-amber-800 font-semibold hidden" role="alert"></div>
     <div class="mt-4 text-gray-700 dark:text-gray-200 hidden" id="resultsPanel" aria-live="polite">
       <div class="grid grid-cols-6 gap-2 md:gap-4">
         <div class="col-span-6 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex flex-col items-center justify-center shadow-md">
@@ -71,24 +71,24 @@
       </div>
     </div>
     <div class="mt-4 flex gap-2 justify-center">
-      <button id="shareBtn" class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 hover:cursor-pointer" aria-label="Share">Share</button>
-      <button id="favoriteBtn" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800 hover:cursor-pointer" aria-label="Save">Save</button>
-      <button id="favoritesBtn" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 hover:cursor-pointer" aria-label="Show Favorites">Favorites</button>
+      <button id="shareBtn" aria-label="Share">Share</button>
+      <button id="favoriteBtn" aria-label="Save">Save</button>
+      <button id="favoritesBtn" aria-label="Show Favorites">Favorites</button>
     </div>
   </div>
-  <div id="favoritesModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50" role="dialog" aria-labelledby="favoritesModalTitle">
-    <div class="bg-white rounded-lg p-6 max-w-lg w-full m-4">
-      <h2 id="favoritesModalTitle" class="text-xl font-bold mb-4 text-gray-800">Saved Favorites</h2>
+  <div id="favoritesModal" class="fixed inset-0 bg-gray-100 dark:bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50" role="dialog" aria-labelledby="favoritesModalTitle">
+    <div class="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-lg w-full m-4">
+      <h2 id="favoritesModalTitle" class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Saved Favorites</h2>
       <ul id="favoritesList" class="space-y-2 max-h-64 overflow-y-auto"></ul>
       <div class="mt-4 flex justify-end">
-        <button onclick="closeFavoritesModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 hover:cursor-pointer" aria-label="Close Favorites">Close</button>
+        <button onclick="closeFavoritesModal()" aria-label="Close Favorites">Close</button>
       </div>
     </div>
   </div>
-  <div id="map" class="w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg hidden z-0" role="region" aria-label="Map"></div>
+  <div id="map" class="grayscale dark:invert w-full max-w-lg h-96 mt-4 rounded-lg shadow-lg hidden z-0" role="region" aria-label="Map"></div>
   <footer class="mt-4 text-sm text-center">
     <p class="text-gray-800 dark:text-gray-200">Data provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline">OpenStreetMap</a> and <a href="https://nominatim.openstreetmap.org" target="_blank" class="underline">Nominatim</a>.</p>
-    <button id="themeToggle" class="mt-2 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 hover:cursor-pointer" aria-label="Toggle dark mode">Toggle Dark Mode</button>
+    <button id="themeToggle" class="mt-2 px-3 py-1 rounded-lg" aria-label="Toggle dark mode">Toggle Dark Mode</button>
   </footer>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
@@ -267,12 +267,12 @@
       }
       favorites.forEach((fav, index) => {
         const li = document.createElement('li');
-        li.className = 'flex flex-col gap-2 justify-between items-center p-2 bg-gray-100 rounded-lg';
+        li.className = 'flex flex-col gap-2 justify-between items-center p-2 bg-gray-100 dark:bg-black border border-black dark:border-white text-black dark:text-white rounded-lg';
         li.innerHTML = `
           <span class="text-sm">${fav.location} (${fav.date})</span>
           <div class="flex gap-2">
-            <button class="load-btn bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 hover:cursor-pointer" data-index="${index}" aria-label="Load favorite ${fav.location}">Load</button>
-            <button class="delete-btn bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 hover:cursor-pointer" data-index="${index}" aria-label="Delete favorite ${fav.location}">Delete</button>
+            <button class="load-btn" data-index="${index}" aria-label="Load favorite ${fav.location}">Load</button>
+            <button class="delete-btn" data-index="${index}" aria-label="Delete favorite ${fav.location}">Delete</button>
           </div>
         `;
         favoritesList.appendChild(li);
